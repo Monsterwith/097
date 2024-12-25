@@ -4,8 +4,8 @@ const path = require("path");
 
 module.exports = {
   config: {
-    name: "owner",
-    aliases: ["admin", "creator"],
+    name: "admin",
+    aliases: ["owner", "creator"],
     version: "1.0",
     author: "Itachiffx",
     role: 0,
@@ -17,7 +17,7 @@ module.exports = {
       name: "Itachi",
       fbLink: "https://www.facebook.com/itachisenseihere?mibextid=ZbWKwL",
       photoLink: "https://i.ibb.co/7pSMgCP/image.jpg", // Replace with a valid photo URL
-      videoLink: "" // Replace with a valid video URL
+      videoLink: "https://drive.google.com/file/d/1U7deUFePEXysFqPCr5Vy_YAVRWAG5sfu/view?usp=drivesdk" // Replace with a valid video URL
     }
   },
   onStart: async function ({ api, event }) {
@@ -42,12 +42,12 @@ module.exports = {
         async () => {
           // Optionally, send a video after the photo
           const videoResponse = await axios.get(creatorDetails.videoLink, { responseType: "arraybuffer" });
-          const videoPath = path.join(__dirname, "cache", `https://drive.google.com/file/d/1U7deUFePEXysFqPCr5Vy_YAVRWAG5sfu/view?usp=drivesdk`);
+          const videoPath = path.join(__dirname, "cache", `creator_video.mp4`);
           await fs.outputFile(videoPath, videoResponse.data);
 
           await api.sendMessage(
             {
-              body: "Here's a short video of the creator! 😜💗",
+              body: "Here's a short video of the creator! 😂💗",
               attachment: fs.createReadStream(videoPath),
             },
             event.threadID
