@@ -4,7 +4,7 @@ const path = require('path');
 const { shortenURL } = global.utils;
 
 async function animeSong(api, event, args, message) {
-    api.setMessageReaction("🤍", event.messageID, (err) => {}, true);
+    api.setMessageReaction("⏰", event.messageID, (err) => {}, true);
     try {
         const animeSongResponse = await axios.get("https://jjk-edit.vercel.app/kshitiz");
         const videoUrl = animeSongResponse.data.videoUrl;
