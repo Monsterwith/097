@@ -3,24 +3,23 @@ const axios = require("axios");
 const path = require("path");
 const { getPrefix } = global.utils;
 const { commands, aliases } = global.GoatBot;
-const doNotDelete = "[ 🐐 | V2 ]"; // Keep this unchanged as per original note
 
 module.exports = {
   config: {
     name: "help",
-    version: "1.17",
-    author: "NTKhang", // original author Kshitiz
+    version: "2.0",
+    author: "Itachiffx",
     countDown: 5,
     role: 0,
     shortDescription: {
-      en: "View command usage and list all commands",
+      en: "View bot commands and usage",
     },
     longDescription: {
-      en: "View command usage and list all available commands.",
+      en: "View a list of all commands or get detailed information about a specific command.",
     },
     category: "info",
     guide: {
-      en: "{pn} /help [commandName]",
+      en: "{pn}help [commandName]",
     },
     priority: 1,
   },
@@ -32,79 +31,62 @@ module.exports = {
 
     if (args.length === 0) {
       const categories = {};
-      let msg = "";
-
-      msg += `🌐 ITA_CHI COMMAND LIST 🌐`; // Replace this header with your bot name
+      let msg = `🌐 **ITACHI COMMAND LIST** 🌐\n`;
 
       for (const [name, value] of commands) {
-        if (value.config.role > 1 && role < value.config.role) continue;
+        if (value.config.role > role) continue;
 
         const category = value.config.category || "Uncategorized";
-        categories[category] = categories[category] || { commands: [] };
-        categories[category].commands.push(name);
+        if (!categories[category]) categories[category] = [];
+        categories[category].push(name);
       }
 
-      // Looping through categories to create formatted output
       Object.keys(categories).forEach((category) => {
-        if (category !== "info") {
-          msg += `\n╭─── ${category.toUpperCase()} ───╮`;
-
-          const names = categories[category].commands.sort();
-          for (let i = 0; i < names.length; i += 3) {
-            const cmds = names.slice(i, i + 3).map((item) => `💸 ${item}`);
-            msg += `\n│ ${cmds.join(" ".repeat(Math.max(1, 15 - cmds.join("").length)))}`;
-          }
-
-          msg += `\n╰────────────────────╯`;
-        }
+        msg += `\n╭── ${category.toUpperCase()} ──╮`;
+        const cmdList = categories[category].sort();
+        msg += cmdList.map((cmd) => `\n│ 🔹 ${cmd}`).join("");
+        msg += `\n╰──────────────────╯\n`;
       });
 
-      const totalCommands = commands.size;
-      msg += `\n\n💡 The bot currently has ${totalCommands} commands available.`;
-      msg += `\nType .help [command]' to get details on a specific command.`;
-      msg += `\n🛠 Created by: 🐐 | ITACHI SENSEI 👾🪽`; // Personal signature
+      msg += `\n💡 **Total Commands:** ${commands.size}`;
+      msg += `\n📖 **Type "${prefix}help [command]" to get details of a command.**`;
+      msg += `\n🛠 **Bot by: ITACHI | 🖤**`;
 
-      const helpListImages = [
-        "https://i.ibb.co/6ZtnN6Q/image.gif"
+      const helpImages = [
+        "https://i.ibb.co/6ZtnN6Q/image.gif", // Replace with other image URLs if necessary
       ];
 
-      const helpListImage = helpListImages[Math.floor(Math.random() * helpListImages.length)];
+      const selectedImage = helpImages[Math.floor(Math.random() * helpImages.length)];
 
       await message.reply({
         body: msg,
-        attachment: await global.utils.getStreamFromURL(helpListImage),
+        attachment: await global.utils.getStreamFromURL(selectedImage),
       });
     } else {
       const commandName = args[0].toLowerCase();
       const command = commands.get(commandName) || commands.get(aliases.get(commandName));
 
       if (!command) {
-        await message.reply(`⚠ Command "${commandName}" not found.`);
+        await message.reply(`❌ Command "${commandName}" not found.`);
       } else {
-        const configCommand = command.config;
-        const roleText = roleTextToString(configCommand.role);
-        const author = configCommand.author || "Unknown";
-        const longDescription = configCommand.longDescription ? configCommand.longDescription.en || "No description available" : "No description available";
+        const config = command.config;
+        const roleDescription = roleToText(config.role);
+        const description = config.longDescription?.en || "No description available.";
+        const usage = config.guide?.en.replace(/{pn}/g, prefix).replace(/{n}/g, config.name) || "No usage guide available.";
+        const aliasesText = config.aliases?.length ? config.aliases.join(", ") : "None";
 
-        const guideBody = configCommand.guide?.en || "No guide available.";
-        const usage = guideBody.replace(/{pn}/g, prefix).replace(/{n}/g, configCommand.name);
+        const response = `╭── **COMMAND DETAILS** ──╮
+│ 🔹 **Name:** ${config.name}
+│ 📝 **Description:** ${description}
+│ 📂 **Category:** ${config.category || "Uncategorized"}
+│ 🛠 **Role Required:** ${roleDescription}
+│ 📖 **Aliases:** ${aliasesText}
+│ ⏳ **Cooldown:** ${config.countDown || 1}s
+│ ✒ **Author:** ${config.author || "Unknown"}
+╰───────────────────╯
 
-        const response = `╭── COMMAND DETAILS ──⭓
-│ 📝 Name: ${configCommand.name}
-│ 🔍 Description: ${longDescription}
-│ 💡 Aliases: ${configCommand.aliases ? configCommand.aliases.join(", ") : "None"}
-│ ⚙ Version: ${configCommand.version || "1.0"}
-│ 🛡 Role Required: ${roleText}
-│ ⏳ Cooldown: ${configCommand.countDown || 1}s
-│ ✒ Author: ${author}
-╰───────────────────⭓
-
-📚 **Usage**:
-${usage}
-
-💬 **Notes**:
-- Text in <XXXXX> should be replaced.
-- Text in [a|b|c] indicates options.`;
+📚 **Usage:**
+${usage}`;
 
         await message.reply(response);
       }
@@ -112,16 +94,16 @@ ${usage}
   },
 };
 
-// Helper function to convert role level to text
-function roleTextToString(roleText) {
-  switch (roleText) {
+// Helper function to convert role levels to text
+function roleToText(role) {
+  switch (role) {
     case 0:
-      return "All users";
+      return "Everyone";
     case 1:
-      return "Group administrators";
+      return "Group Admins";
     case 2:
-      return "Bot administrators";
+      return "Bot Admins";
     default:
-      return "Unknown role";
+      return "Unknown";
   }
 }
