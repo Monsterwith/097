@@ -31,7 +31,7 @@ module.exports = {
 
     if (args.length === 0) {
       const categories = {};
-      let msg = `🌐 **ITACHI COMMAND LIST** 🌐\n`;
+      let msg = `🌐 ITA_CHI COMMAND LIST 🌐\n`;
 
       for (const [name, value] of commands) {
         if (value.config.role > role) continue;
@@ -48,9 +48,9 @@ module.exports = {
         msg += `\n╰──────────────────╯\n`;
       });
 
-      msg += `\n💡 **Total Commands:** ${commands.size}`;
-      msg += `\n📖 **Type "${prefix}help [command]" to get details of a command.**`;
-      msg += `\n🛠 **Bot by: ITACHI | 🖤**`;
+      msg += `\n💡 Total Commands: ${commands.size}`;
+      msg += `\n📖 Type "${prefix}help [command]" to get details of a command.`;
+      msg += `\n🛠 Bot by: ITACHI | 🤍`;
 
       const helpImages = [
         "https://i.ibb.co/6ZtnN6Q/image.gif", // Replace with other image URLs if necessary
@@ -75,7 +75,7 @@ module.exports = {
         const usage = config.guide?.en.replace(/{pn}/g, prefix).replace(/{n}/g, config.name) || "No usage guide available.";
         const aliasesText = config.aliases?.length ? config.aliases.join(", ") : "None";
 
-        const response = `╭── **COMMAND DETAILS** ──╮
+        const response = `╭── COMMAND DETAILS ──╮
 │ 🔹 **Name:** ${config.name}
 │ 📝 **Description:** ${description}
 │ 📂 **Category:** ${config.category || "Uncategorized"}
