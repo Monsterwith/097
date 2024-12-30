@@ -1,68 +1,31 @@
-const axios = require("axios");
-const fs = require("fs-extra");
-const path = require("path");
+const moment = require('moment');
 
 module.exports = {
   config: {
     name: "uptime",
-    aliases: ["u" ,"up" ,"upt"],
+    aliases: ['up'],
     version: "1.0",
-    author: "OtinXSandip & Vex_kshitiz",
-    role: 0,
-    shortDescription: { en: "Displays uptime, total users, total threads, and ping." },
-    longDescription: { en: "Displays the total number of users, threads, bot uptime, and ping, along with a random anime image." },
+    author: "HeDroxuu",
     category: "system",
-    guide: { en: "Use {p}uptimeMonitor to view all system stats and uptime." }
-  },
-
-  onStart: async function ({ api, event, args, usersData, threadsData }) {
-    try {
-      // Start ping timer
-      const startTime = Date.now();
-
-      // Fetch all users and threads
-      const allUsers = await usersData.getAll();
-      const allThreads = await threadsData.getAll();
-
-      // Get system uptime
-      const uptime = process.uptime();
-      const days = Math.floor(uptime / 86400);
-      const hours = Math.floor((uptime % 86400) / 3600);
-      const minutes = Math.floor((uptime % 3600) / 60);
-      const seconds = Math.floor(uptime % 60);
-
-      const uptimeString = `${days} days ${hours} hours ${minutes} minutes ${seconds} seconds`;
-
-      // Get a random anime image
-      const animeNames = ["zoro", "madara", "obito", "luffy", "itachi"];
-      const randomAnime = animeNames[Math.floor(Math.random() * animeNames.length)];
-      const imageUrl = `https://pin-kshitiz.vercel.app/pin?search=${encodeURIComponent(randomAnime)}`;
-
-      const animeResponse = await axios.get(imageUrl);
-      const animeImage = animeResponse.data.result[Math.floor(Math.random() * animeResponse.data.result.length)];
-
-      const imageBuffer = await axios.get(animeImage, { responseType: 'arraybuffer' });
-      const imagePath = path.join(__dirname, 'cache', `uptimeMonitor_image.jpg`);
-      await fs.outputFile(imagePath, imageBuffer.data);
-
-      // Calculate ping
-      const ping = Date.now() - startTime;
-
-      // Build message
-      const message = `⏰ | Bot Uptime: ${uptimeString}\n\n👪 | Total Users: ${allUsers.length}\n🌸 | Total Threads: ${allThreads.length}\n🏓 | Ping: ${ping}ms`;
-
-      // Send message with image
-      const imageStream = fs.createReadStream(imagePath);
-      await api.sendMessage({
-        body: message,
-        attachment: imageStream
-      }, event.threadID, event.messageID);
-
-      // Clean up the image file
-      await fs.unlink(imagePath);
-    } catch (error) {
-      console.error("Error in uptimeMonitor command:", error);
-      api.sendMessage("An error occurred while retrieving the data.", event.threadID);
+    guide: {
+      en: "Use {p}uptime or {p}upt"
     }
+  },
+  onStart: async function ({ message }) {
+    const uptime = process.uptime();
+    const formattedUptime = formatMilliseconds(uptime * 1000);
+
+    const response = `╭╼╾『𝐒𝐲𝐬𝐭𝐞𝐦 𝐔𝐩𝐭𝐢𝐦𝐞』\n${formattedUptime}`;
+
+    message.reply(response);
   }
 };
+
+function formatMilliseconds(ms) {
+  const seconds = Math.floor(ms / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+
+  return `╰─> 𝐃𝐚𝐲𝐬 ─ ${days}\n╰─> 𝐇𝐫𝐬 ─ ${hours % 24}\n╰─> 𝐌𝐢𝐧𝐬 ─ ${minutes % 60}\n╰─> 𝐒𝐞𝐜 ─ ${seconds % 60}`;
+}
