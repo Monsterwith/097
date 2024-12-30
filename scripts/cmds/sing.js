@@ -48,7 +48,7 @@ async function video(api, event, args, message) {
                 videoId = searchResponse.data[0].videoId;
             }
 
-            const videoUrlResponse = await axios.get(`https://mr-kshitizyt.onrender.com/download?id=${encodeURIComponent(videoId)}&apikey=${getRandomApiKey()}`);
+            const videoUrlResponse = await axios.get(`https://mr-kshitizyt-hfhj.onrender.com/download?id=${encodeURIComponent(videoId)}&apikey=${getRandomApiKey()}`);
             if (videoUrlResponse.data.length > 0) {
                 shortUrl = await shortenURL(videoUrlResponse.data[0]);
             }
@@ -59,7 +59,7 @@ async function video(api, event, args, message) {
             return;
         }
 
-        const downloadResponse = await axios.get(`https://mr-kshitizyt.onrender.com/download?id=${encodeURIComponent(videoId)}&apikey=${getRandomApiKey()}`);
+        const downloadResponse = await axios.get(`https://mr-kshitizyt-hfhj.onrender.com/download?id=${encodeURIComponent(videoId)}&apikey=${getRandomApiKey()}`);
         const videoUrl = downloadResponse.data[0];
 
         if (!videoUrl) {
