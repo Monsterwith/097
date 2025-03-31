@@ -1,8 +1,8 @@
 module.exports = {
   config: {
     name: "spy",
-    version: "1.0",
-    author: "Shikaki",
+    version: "1.1",
+    author: "Itachiffx",
     countDown: 5,
     role: 0,
     shortDescription: "Get user information and avatar",
@@ -10,53 +10,69 @@ module.exports = {
     category: "image",
   },
 
-   onStart: async function ({ event, message, usersData, api, args, getLang }) {
-    let avt;
+  onStart: async function ({ event, message, usersData, api, args, getLang }) {
+    let uid;
     const uid1 = event.senderID;
     const uid2 = Object.keys(event.mentions)[0];
-    let uid;
 
     if (args[0]) {
-      // Check if the argument is a numeric UID
       if (/^\d+$/.test(args[0])) {
         uid = args[0];
       } else {
-        // Check if the argument is a profile link
         const match = args[0].match(/profile\.php\?id=(\d+)/);
-        if (match) {
-          uid = match[1];
-        }
+        if (match) uid = match[1];
       }
     }
 
     if (!uid) {
-      // If no UID was extracted from the argument, use the default logic
       uid = event.type === "message_reply" ? event.messageReply.senderID : uid2 || uid1;
     }
 
     api.getUserInfo(uid, async (err, userInfo) => {
-      if (err) {
-        return message.reply("Failed to retrieve user information.");
-      }
+      if (err) return message.reply("Failed to retrieve user information.");
 
       const avatarUrl = await usersData.getAvatarUrl(uid);
 
       // Gender mapping
-      let genderText;
-      switch (userInfo[uid].gender) {
-        case 1:
-          genderText = "Girl";
-          break;
-        case 2:
-          genderText = "Boy";
-          break;
-        default:
-          genderText = "Unknown";
-      }
+      let genderText = "🚻 Unknown";
+      if (userInfo[uid].gender === 1) genderText = "👩 Girl";
+      if (userInfo[uid].gender === 2) genderText = "👨 Boy";
 
-      // Construct and send the user's information with avatar
-      const userInformation = `❏ Name: ${userInfo[uid].name}\n❏ Profile URL: ${userInfo[uid].profileUrl}\n❏ Gender: ${genderText}\n❏ User Type: ${userInfo[uid].type}\n❏ Is Friend: ${userInfo[uid].isFriend ? "Yes" : "No"}\n❏ Is Birthday today: ${userInfo[uid].isBirthday ? "Yes" : "No"}`;
+      // Friend status
+      const isFriend = userInfo[uid].isFriend ? "Yes ✅" : "No ❎";
 
+      // Money & Rank (Replace with real values)
+      const money = await usersData.get(uid, "money") || 0;
+      const rank = "#103/525";  // Placeholder: Replace with actual rank logic
+      const moneyRank = "#525/525";  // Placeholder: Replace with actual money rank logic
+
+      // Fetch user details
+      const username = userInfo[uid].vanity || "None";
+      const nickname = userInfo[uid].alternateName || "None";
+      const birthday = userInfo[uid].isBirthday ? "Today 🎂" : "Private";
+
+      // Group Name (Replace with actual logic if available)
+      const groupName = "BOT VERSE";  
+
+      // Constructing the user info message
+      const userInformation = `╭───╴✨【 𝐔𝐒𝐄𝐑 𝐈𝐍𝐅𝐎 】✨
+├💼 𝐍𝐚𝐦𝐞: ${userInfo[uid].name}
+├👤 𝐍𝐢𝐜𝐤𝐧𝐚𝐦𝐞: ${nickname}
+├🌍 𝐆𝐫𝐨𝐮𝐩: ${groupName}
+├🧬 𝐆𝐞𝐧𝐝𝐞𝐫: ${genderText}
+├🆔 𝐔𝐈𝐃: ${uid}
+├🏷 𝐂𝐥𝐚𝐬𝐬: user
+├🌐 𝐔𝐬𝐞𝐫𝐧𝐚𝐦𝐞: ${username}
+├🔗 𝐏𝐫𝐨𝐟𝐢𝐥𝐞 𝐔𝐑𝐋: https://www.facebook.com/profile.php?id=${uid}
+├🎂 𝐁𝐢𝐫𝐭𝐡𝐝𝐚𝐲: ${birthday}
+╰🤝 𝐅𝐫𝐢𝐞𝐧𝐝 𝐰𝐢𝐭𝐡 𝐁𝐨𝐭: ${isFriend}
+
+╭───╴🌟【 𝐔𝐒𝐄𝐑 𝐒𝐓𝐀𝐓𝐒 】🌟
+├💰 𝐌𝐨𝐧𝐞𝐲: $${money}
+├📈 𝐑𝐚𝐧𝐤: ${rank}
+╰💵 𝐌𝐨𝐧𝐞𝐲 𝐑𝐚𝐧𝐤: ${moneyRank}`;
+
+      // Send the user info with avatar
       message.reply({
         body: userInformation,
         attachment: await global.utils.getStreamFromURL(avatarUrl)
