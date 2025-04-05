@@ -2,7 +2,7 @@ const fs = require("fs-extra");
 const axios = require("axios");
 const cheerio = require("cheerio");
 const qs = require("qs");
-const { getStreamFromURL, randomString } = global.utils;
+const { getStreamFromURL, shortenURL, randomString } = global.utils;
 
 function loadAutoLinkStates() {
   try {
@@ -13,34 +13,21 @@ function loadAutoLinkStates() {
   }
 }
 
-
 function saveAutoLinkStates(states) {
   fs.writeFileSync("autolink.json", JSON.stringify(states, null, 2));
 }
 
-
 let autoLinkStates = loadAutoLinkStates();
-
-
-async function shortenURL(url) {
-  try {
-    const response = await axios.get(`https://shortner-sepia.vercel.app/kshitiz?url=${encodeURIComponent(url)}`);
-    return response.data.shortened;
-  } catch (error) {
-    console.error(error);
-    throw new Error("Failed to shorten URL");
-  }
-}
 
 module.exports = {
   threadStates: {},
   config: {
     name: 'autolink',
-    version: '5.0',
+    version: '5',
     author: 'Vex_Kshitiz',
     countDown: 5,
     role: 0,
-    shortDescription: 'Auto video downloader for Instagram, Facebook, TikTok, Twitter, Pinterest, and YouTube',
+    shortDescription: 'Auto video downloader for Instagram, Facebook, TikTok, Twitter, pinterest and youtube',
     longDescription: '',
     category: 'media',
     guide: {
@@ -80,7 +67,7 @@ module.exports = {
       } else {
         api.sendMessage("", event.threadID, event.messageID);
       }
-      api.setMessageReaction("⏰", event.messageID, (err) => {}, true);
+      api.setMessageReaction("🕐", event.messageID, (err) => {}, true);
     }
   },
   downLoad: function (url, api, event) {
@@ -116,6 +103,7 @@ module.exports = {
 
       const shortUrl = await shortenURL(res);
       const messageBody = `✅ 🔗 Download Url: ${shortUrl}`;
+
       api.sendMessage({
         body: messageBody,
         attachment: fs.createReadStream(path)
@@ -244,8 +232,8 @@ module.exports = {
   },
   downloadYouTube: async function (url, api, event, path) {
     try {
-      const res = await axios.get(`https://yt-dl-zeta.vercel.app/video?url=${encodeURIComponent(url)}`);
-      const videoUrl = res.data.videoUrl;
+      const res = await axios.get(`https://yt-downloader-eta.vercel.app/kshitiz?url=${encodeURIComponent(url)}`);
+      const videoUrl = res.data.url;
 
       const response = await axios({
         method: "GET",
