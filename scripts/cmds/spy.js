@@ -1,7 +1,7 @@
 module.exports = {
   config: {
     name: "spy",
-    version: "1.1",
+    version: "1.2",
     author: "Itachiffx",
     countDown: 5,
     role: 0,
@@ -10,7 +10,7 @@ module.exports = {
     category: "image",
   },
 
-  onStart: async function ({ event, message, usersData, api, args, getLang }) {
+  onStart: async function ({ event, message, usersData, threadsData, api, args }) {
     let uid;
     const uid1 = event.senderID;
     const uid2 = Object.keys(event.mentions)[0];
@@ -29,32 +29,31 @@ module.exports = {
     }
 
     api.getUserInfo(uid, async (err, userInfo) => {
-      if (err) return message.reply("Failed to retrieve user information.");
+      if (err) return message.reply("❌ Failed to retrieve user information.");
 
       const avatarUrl = await usersData.getAvatarUrl(uid);
 
-      // Gender mapping
       let genderText = "🚻 Unknown";
       if (userInfo[uid].gender === 1) genderText = "👩 Girl";
       if (userInfo[uid].gender === 2) genderText = "👨 Boy";
 
-      // Friend status
       const isFriend = userInfo[uid].isFriend ? "Yes ✅" : "No ❎";
 
-      // Money & Rank (Replace with real values)
       const money = await usersData.get(uid, "money") || 0;
-      const rank = "#103/525";  // Placeholder: Replace with actual rank logic
-      const moneyRank = "#525/525";  // Placeholder: Replace with actual money rank logic
+      const rank = "#103/525";  
+      const moneyRank = "#525/525";
 
-      // Fetch user details
       const username = userInfo[uid].vanity || "None";
       const nickname = userInfo[uid].alternateName || "None";
       const birthday = userInfo[uid].isBirthday ? "Today 🎂" : "Private";
 
-      // Group Name (Replace with actual logic if available)
-      const groupName = "BOT VERSE";  
+      // Fetch current group name
+      let groupName = "Private Chat";
+      try {
+        const threadInfo = await threadsData.get(event.threadID);
+        if (threadInfo?.threadName) groupName = threadInfo.threadName;
+      } catch (e) {}
 
-      // Constructing the user info message
       const userInformation = `╭───╴✨【 𝐔𝐒𝐄𝐑 𝐈𝐍𝐅𝐎 】✨
 ├💼 𝐍𝐚𝐦𝐞: ${userInfo[uid].name}
 ├👤 𝐍𝐢𝐜𝐤𝐧𝐚𝐦𝐞: ${nickname}
@@ -72,7 +71,6 @@ module.exports = {
 ├📈 𝐑𝐚𝐧𝐤: ${rank}
 ╰💵 𝐌𝐨𝐧𝐞𝐲 𝐑𝐚𝐧𝐤: ${moneyRank}`;
 
-      // Send the user info with avatar
       message.reply({
         body: userInformation,
         attachment: await global.utils.getStreamFromURL(avatarUrl)
