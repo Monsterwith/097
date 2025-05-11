@@ -20,7 +20,7 @@
     "61566141347676"],
   "whiteListMode": {
     "enable": false,
-    "whiteListIds": "[61566141347676"],
+    "whiteListIds": ["61566141347676"],
     "notes": "if you enable this feature, only the ids in the whiteListIds section can use the bot"
   },
   "nickNameBot": "۞𝑺𝑨𝑴𝑴𝒀۞",
