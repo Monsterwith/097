@@ -114,10 +114,10 @@ function buildAPI(globalOptions, html, jar) {
                 }
             } catch { }
             if (fb_dtsg) {
-                console.log("Đã tìm thấy fb_dtsg");
+                console.log("Found fb_dtsg");
             }
         } catch (e) {
-            console.log("Lỗi khi tìm fb_dtsg:", e);
+            console.log("Error while searching fb_dtsg:", e);
         }
     }
     extractFromHTML();
@@ -129,7 +129,7 @@ function buildAPI(globalOptions, html, jar) {
         return log.error('login', "Không tìm thấy cookie cho người dùng, vui lòng kiểm tra lại thông tin đăng nhập");
     }
     if (html.includes("/checkpoint/block/?next")) {
-        return log.error('login', "Appstate die, vui lòng thay cái mới!", 'error');
+        return log.error('login', "Appstate die, please replace with new one!", 'error');
     }
     userID = (tiktikCookie || userCookie).cookieString().split("=")[1];
     //logger.log(`${cra(`[ CONNECT ]`)} Logged in as ${userID}`, "DATABASE");
@@ -141,7 +141,7 @@ function buildAPI(globalOptions, html, jar) {
     try {
         const endpointMatch = html.match(/"endpoint":"([^"]+)"/);
         if (endpointMatch.input.includes("601051028565049")) {
-          console.log(`lỗi login vì dính tài khoản tự động`);
+          console.log(`login error due to automatic account`);
           ditconmemay = true;
         }
         if (endpointMatch) {
@@ -152,7 +152,7 @@ function buildAPI(globalOptions, html, jar) {
     } catch (e) {
         console.log('Using default MQTT endpoint');
     }
-    log.info('login', 'Fix fca by DongDev x Satoru, published By Team Calyx');
+    log.info('login', 'Fix fca by MONSTERWITH, published By Team Sammy);
     var ctx = {
         userID: userID,
         jar: jar,
