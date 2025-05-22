@@ -1,7 +1,7 @@
 {
   "facebookAccount": {
-    "email": "",
-    "password": "",
+    "email": "sammynewlife7@gmail.com",
+    "password": "King k763",
     "2FASecret": "",
     "i_user": "",
     "proxy": null,
@@ -17,10 +17,10 @@
     "ignoreCommand": []
   },
   "adminBot": [
-    "61566141347676"],
+    "61575847331340"],
   "whiteListMode": {
     "enable": false,
-    "whiteListIds": ["61566141347676"],
+    "whiteListIds": ["61575847331340"],
     "notes": "if you enable this feature, only the ids in the whiteListIds section can use the bot"
   },
   "nickNameBot": "۞𝑺𝑨𝑴𝑴𝒀۞",
